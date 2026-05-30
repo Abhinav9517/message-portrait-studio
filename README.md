@@ -21,6 +21,50 @@
   - Download the final portrait as a PNG
   - Built to work fully in the browser
 
+## Best Settings for Clear Face Portraits
+
+For the clearest and most recognizable face result, use a portrait photo where the face is well-lit, sharp, and close to the camera.
+
+### Recommended Portrait Settings
+
+| Option      | Best Value             |
+| ----------- | ---------------------- |
+| Density     | 180–220 cols           |
+| Contrast    | 3.0x–4.0x              |
+| Brightness  | +15 to +25             |
+| Gamma       | 1.10–1.25              |
+| Warmth      | 0%–20%                 |
+| Color Style | Monochrome / Black Ink |
+| Ink Tint    | #222222                |
+| Paper Tint  | #FAF8F2                |
+| Color Boost | 0%–10%                 |
+| Vignette    | 0%                     |
+
+### Best Face-Clarity Preset
+
+Density: 200 cols
+Contrast: 3.5x
+Brightness: +20
+Gamma: 1.15
+Warmth: 10%
+Color Style: Monochrome
+Ink Tint: #222222
+Paper Tint: #FAF8F2
+Color Boost: 5%
+Vignette: 0%
+
+
+### Tips for Better Results
+
+* Crop the photo so the face covers 40–60% of the image.
+* Use a clear front-facing portrait.
+* Avoid blurry, dark, or far-away photos.
+* Use simple backgrounds for better face separation.
+* Reduce density if the portrait looks too noisy.
+* Increase contrast if the face is not visible clearly.
+* Avoid heavy duotone colors when face clarity is the main goal.
+
+
   ## How It Works
 
   The app uses the Canvas API to read the uploaded image, down-sample it, and
@@ -33,7 +77,7 @@
 
   1. Clone the repository:
      ```bash
-     git clone https://github.com/your-username/message-portrait-studio.git
+     git clone https://github.com/Abhinav9517/message-portrait-studio.git
 
   2. Open the project folder:
 
