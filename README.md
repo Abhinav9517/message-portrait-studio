@@ -6,7 +6,7 @@
 
   ## Live Demo
 
-  [View the live demo](https://your-username.github.io/message-portrait-studio/)
+  [View the live demo](https://abhinav9517.github.io/message-portrait-studio/)
 
 
   If you prefer, you can also add a short GIF here to show the interaction in
