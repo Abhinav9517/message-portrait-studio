@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message Portrait Studio</title>
+  <style>
+    :root {
+      --bg: #0f0b0a;
+      --panel: rgba(28, 20, 17, 0.88);
+      --panel-soft: rgba(39, 29, 24, 0.9);
+      --stroke: rgba(255, 235, 214, 0.12);
+      --text: #f5e9d8;
+      --muted: #c9b29a;
+      --accent: #f3b87a;
+      --accent-strong: #ffd5a3;
+      --paper: #ead7bf;
+      --shadow: rgba(0, 0, 0, 0.38);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(210, 147, 94, 0.18), transparent 36%),
+        radial-gradient(circle at 15% 15%, rgba(255, 214, 156, 0.09), transparent 22%),
+        linear-gradient(140deg, #090707 0%, #120d0b 45%, #1d140f 100%);
+    }
+
+    .page {
+      width: min(1220px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 36px;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: minmax(320px, 390px) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--stroke);
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(38, 27, 22, 0.96), rgba(20, 14, 12, 0.94));
+      box-shadow: 0 22px 48px var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 211, 154, 0.09), transparent 38%);
+      pointer-events: none;
+    }
+
+    .controls {
+      padding: 28px;
+    }
+
+    .eyebrow {
+      margin-bottom: 10px;
+      font-size: 0.82rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    h1, h2, p {
+      margin: 0;
+    }
+
+    h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 3vw, 3rem);
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+    }
+
+    .intro {
+      margin-top: 16px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.98rem;
+    }
+
+    .upload-card {
+      position: relative;
+      display: block;
+      margin-top: 26px;
+      padding: 18px 18px 16px;
+      border: 1px dashed rgba(255, 219, 180, 0.28);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255, 221, 182, 0.07), rgba(255, 221, 182, 0.02));
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .upload-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 219, 180, 0.48);
+      background: linear-gradient(180deg, rgba(255, 221, 182, 0.1), rgba(255, 221, 182, 0.03));
+    }
+
+    .upload-card input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .upload-title {
+      display: block;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent-strong);
+    }
+
+    .upload-copy {
+      display: block;
+      margin-top: 8px;
+      font-size: 0.92rem;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .control-grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .control {
+      padding: 14px 15px 12px;
+      border: 1px solid rgba(255, 235, 214, 0.08);
+      border-radius: 18px;
+      background: var(--panel-soft);
+    }
+
+    .control-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 10px;
+      font-size: 0.92rem;
+    }
+
+    .control-label {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .control-value {
+      color: var(--accent-strong);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .control input[type="range"] {
+      width: 100%;
+      accent-color: #ffc37f;
+      cursor: pointer;
+    }
+
+    .message-input {
+      width: 100%;
+      min-height: 118px;
+      padding: 12px 13px;
+      border: 1px solid rgba(255, 235, 214, 0.12);
+      border-radius: 16px;
+      resize: vertical;
+      background: rgba(255, 245, 233, 0.05);
+      color: var(--text);
+      font: inherit;
+      line-height: 1.45;
+    }
+
+    .message-input::placeholder {
+      color: rgba(201, 178, 154, 0.72);
+    }
+
+    .message-input:focus {
+      outline: 2px solid rgba(255, 211, 154, 0.18);
+      outline-offset: 2px;
+      border-color: rgba(255, 211, 154, 0.34);
+    }
+
+    .control-note {
+      display: block;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 20px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .primary {
+      color: #23150f;
+      background: linear-gradient(180deg, #ffd69d, #e6a764);
+      box-shadow: 0 12px 24px rgba(229, 160, 96, 0.26);
+    }
+
+    .secondary {
+      color: var(--text);
+      background: rgba(255, 225, 193, 0.12);
+      border: 1px solid rgba(255, 225, 193, 0.18);
+    }
+
+    .ghost {
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .status {
+      min-height: 24px;
+      margin-top: 16px;
+      font-size: 0.94rem;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .status.error {
+      color: #ffbaad;
+    }
+
+    .preview {
+      padding: 24px;
+    }
+
+    .preview-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .preview-head h2 {
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+    }
+
+    .preview-subtitle {
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.4;
+    }
+
+    .badge {
+      flex-shrink: 0;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 209, 160, 0.1);
+      border: 1px solid rgba(255, 209, 160, 0.14);
+      color: var(--accent-strong);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .preview-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 340px;
+      overflow: hidden;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 239, 223, 0.08);
+      background:
+        radial-gradient(circle at top, rgba(255, 211, 154, 0.1), transparent 28%),
+        linear-gradient(180deg, rgba(24, 18, 15, 0.95), rgba(15, 11, 10, 0.96));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .preview-card::before {
+      content: attr(data-placeholder);
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 26px;
+      text-align: center;
+      color: rgba(245, 233, 216, 0.45);
+      font-size: 0.96rem;
+      line-height: 1.45;
+    }
+
+    .preview-card.is-filled::before {
+      display: none;
+    }
+
+    .preview-card img,
+    .preview-card canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    #sourcePreview {
+      min-height: 340px;
+      background: linear-gradient(180deg, rgba(255, 250, 246, 0.03), rgba(255, 250, 246, 0.01));
+    }
+
+    #outputCanvas {
+      min-height: 340px;
+      background: radial-gradient(circle at top, rgba(255, 235, 206, 0.05), rgba(255, 235, 206, 0.01));
+    }
+
+    .card-label {
+      position: absolute;
+      left: 16px;
+      bottom: 14px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 239, 223, 0.12);
+      background: rgba(10, 8, 7, 0.62);
+      color: #edd6bc;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+    }
+
+    @media (max-width: 960px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-card {
+        min-height: 280px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 20px, 1220px);
+        padding-top: 18px;
+        padding-bottom: 24px;
+      }
+
+      .controls,
+      .preview {
+        padding: 20px;
+      }
+
+      .preview-head {
+        flex-direction: column;
+        align-items: start;
+      }
+
+      .action-row {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="app-shell">
+      <section class="panel controls">
+        <div class="eyebrow">Message Portrait Studio</div>
+        <h1>Turn any photo into a portrait built from your message.</h1>
+        <p class="intro">
+          Upload a picture, write a confession or special note, and this page will
+          rebuild the portrait from your own repeated text with strong contrast,
+          warm paper tones, and a downloadable high-resolution canvas.
+        </p>
+
+        <label class="upload-card">
+          <input id="imageInput" type="file" accept="image/*">
+          <span class="upload-title">Choose a portrait photo</span>
+          <span class="upload-copy">
+            Best results come from a clear face photo with visible light on the eyes and cheeks.
+          </span>
+        </label>
+
+        <div class="control-grid">
+          <label class="control" for="messageInput">
+            <span class="control-head">
+              <span class="control-label">Special message</span>
+              <span class="control-value" id="messageValue"></span>
+            </span>
+            <textarea
+              class="message-input"
+              id="messageInput"
+              rows="5"
+              placeholder="Type the confession or special message you want woven into the portrait."
+            >I love you more every day. Stay with me forever.</textarea>
+            <span class="control-note">
+              The portrait repeats this text line by line. Zoom the canvas or the downloaded PNG to read it clearly.
+            </span>
+          </label>
+
+          <label class="control" for="density">
+            <span class="control-head">
+              <span class="control-label">Density</span>
+              <span class="control-value" id="densityValue"></span>
+            </span>
+            <input id="density" type="range" min="140" max="300" value="220">
+          </label>
+
+          <label class="control" for="contrast">
+            <span class="control-head">
+              <span class="control-label">Contrast</span>
+              <span class="control-value" id="contrastValue"></span>
+            </span>
+            <input id="contrast" type="range" min="90" max="220" value="152">
+          </label>
+
+          <label class="control" for="brightness">
+            <span class="control-head">
+              <span class="control-label">Brightness</span>
+              <span class="control-value" id="brightnessValue"></span>
+            </span>
+            <input id="brightness" type="range" min="-40" max="45" value="8">
+          </label>
+
+          <label class="control" for="gamma">
+            <span class="control-head">
+              <span class="control-label">Gamma</span>
+              <span class="control-value" id="gammaValue"></span>
+            </span>
+            <input id="gamma" type="range" min="65" max="130" value="92">
+          </label>
+
+          <label class="control" for="warmth">
+            <span class="control-head">
+              <span class="control-label">Warmth</span>
+              <span class="control-value" id="warmthValue"></span>
+            </span>
+            <input id="warmth" type="range" min="0" max="100" value="72">
+          </label>
+        </div>
+
+        <div class="action-row">
+          <button class="primary" id="renderButton" type="button">Transform With Message</button>
+          <button class="secondary" id="downloadButton" type="button" disabled>Download PNG</button>
+          <button class="ghost" id="resetButton" type="button">Reset Style</button>
+        </div>
+
+        <p class="status" id="status">Upload a photo to generate a portrait built from your message.</p>
+      </section>
+
+      <section class="panel preview">
+        <div class="preview-head">
+          <div>
+            <h2>Preview Workspace</h2>
+            <p class="preview-subtitle" id="fileLabel">No image loaded yet.</p>
+          </div>
+          <div class="badge">Message Canvas</div>
+        </div>
+
+        <div class="preview-grid">
+          <figure class="preview-card" id="sourceCard" data-placeholder="Your original image will appear here after upload.">
+            <img id="sourcePreview" alt="Uploaded image preview">
+            <figcaption class="card-label">Original</figcaption>
+          </figure>
+
+          <figure class="preview-card" id="resultCard" data-placeholder="The transformed message portrait will render here.">
+            <canvas id="outputCanvas"></canvas>
+            <figcaption class="card-label">Message Portrait</figcaption>
+          </figure>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const defaults = {
+      message: "I love you more every day. Stay with me forever.",
+      density: 220,
+      contrast: 152,
+      brightness: 8,
+      gamma: 92,
+      warmth: 72
+    };
+
+    const imageInput = document.getElementById("imageInput");
+    const messageInput = document.getElementById("messageInput");
+    const renderButton = document.getElementById("renderButton");
+    const downloadButton = document.getElementById("downloadButton");
+    const resetButton = document.getElementById("resetButton");
+    const outputCanvas = document.getElementById("outputCanvas");
+    const sourcePreview = document.getElementById("sourcePreview");
+    const sourceCard = document.getElementById("sourceCard");
+    const resultCard = document.getElementById("resultCard");
+    const fileLabel = document.getElementById("fileLabel");
+    const status = document.getElementById("status");
+
+    const controls = {
+      density: document.getElementById("density"),
+      contrast: document.getElementById("contrast"),
+      brightness: document.getElementById("brightness"),
+      gamma: document.getElementById("gamma"),
+      warmth: document.getElementById("warmth")
+    };
+
+    const valueLabels = {
+      message: document.getElementById("messageValue"),
+      density: document.getElementById("densityValue"),
+      contrast: document.getElementById("contrastValue"),
+      brightness: document.getElementById("brightnessValue"),
+      gamma: document.getElementById("gammaValue"),
+      warmth: document.getElementById("warmthValue")
+    };
+
+    const sourceCanvas = document.createElement("canvas");
+    const sourceContext = sourceCanvas.getContext("2d", { willReadFrequently: true });
+    const outputContext = outputCanvas.getContext("2d");
+
+    const state = {
+      image: null,
+      imageUrl: "",
+      fileBase: "message-portrait",
+      scheduled: 0,
+      hasRender: false
+    };
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function noise2D(x, y) {
+      const raw = Math.sin((x * 12.9898) + (y * 78.233)) * 43758.5453;
+      return raw - Math.floor(raw);
+    }
+
+    function normalizeMessage(value) {
+      return value.replace(/\s+/g, " ").trim();
+    }
+
+    function updateValueLabels() {
+      const message = normalizeMessage(messageInput.value);
+      valueLabels.message.textContent = message.length + " chars";
+      valueLabels.density.textContent = controls.density.value + " cols";
+      valueLabels.contrast.textContent = (Number(controls.contrast.value) / 100).toFixed(2) + "x";
+      valueLabels.brightness.textContent = (Number(controls.brightness.value) >= 0 ? "+" : "") + controls.brightness.value;
+      valueLabels.gamma.textContent = (Number(controls.gamma.value) / 100).toFixed(2);
+      valueLabels.warmth.textContent = controls.warmth.value + "%";
+    }
+
+    function setStatus(message, isError) {
+      status.textContent = message;
+      status.classList.toggle("error", Boolean(isError));
+    }
+
+    function sanitizeFileBase(name) {
+      return name
+        .replace(/\.[^.]+$/, "")
+        .replace(/[^a-z0-9_-]+/gi, "-")
+        .replace(/^-+|-+$/g, "")
+        .toLowerCase() || "message-portrait";
+    }
+
+    function setImageLoaded(imageUrl) {
+      sourcePreview.src = imageUrl;
+      sourceCard.classList.add("is-filled");
+      fileLabel.textContent = "Loaded: " + state.fileBase;
+    }
+
+    function clearRenderedCanvas() {
+      outputCanvas.width = 1;
+      outputCanvas.height = 1;
+      outputContext.setTransform(1, 0, 0, 1, 0, 0);
+      outputContext.clearRect(0, 0, 1, 1);
+      resultCard.classList.remove("is-filled");
+      downloadButton.disabled = true;
+      state.hasRender = false;
+    }
+
+    function readControlValues() {
+      return {
+        message: normalizeMessage(messageInput.value),
+        density: Number(controls.density.value),
+        contrast: Number(controls.contrast.value) / 100,
+        brightness: Number(controls.brightness.value),
+        gamma: Number(controls.gamma.value) / 100,
+        warmth: Number(controls.warmth.value) / 100
+      };
+    }
+
+    function buildMessageFlow(message) {
+      return message + "   ";
+    }
+
+    function getMessageCharacter(flow, x, y) {
+      const rowOffset = ((y * 7) + (y * y * 3)) % flow.length;
+      return flow[(rowOffset + x) % flow.length];
+    }
+
+    function createPaperGradient(context, width, height, warmth) {
+      const gradient = context.createLinearGradient(0, 0, width, height);
+      const topR = Math.round(244 - (warmth * 10));
+      const topG = Math.round(232 - (warmth * 6));
+      const topB = Math.round(214 - (warmth * 18));
+      const bottomR = Math.round(216 - (warmth * 12));
+      const bottomG = Math.round(201 - (warmth * 7));
+      const bottomB = Math.round(181 - (warmth * 16));
+      gradient.addColorStop(0, "rgb(" + topR + ", " + topG + ", " + topB + ")");
+      gradient.addColorStop(0.52, "rgb(" + (topR - 5) + ", " + (topG - 4) + ", " + (topB - 7) + ")");
+      gradient.addColorStop(1, "rgb(" + bottomR + ", " + bottomG + ", " + bottomB + ")");
+      return gradient;
+    }
+
+    function toInkColor(r, g, b, ink, warmth) {
+      const sepiaR = clamp((r * 0.393) + (g * 0.769) + (b * 0.189), 0, 255);
+      const sepiaG = clamp((r * 0.349) + (g * 0.686) + (b * 0.168), 0, 255);
+      const sepiaB = clamp((r * 0.272) + (g * 0.534) + (b * 0.131), 0, 255);
+      const red = Math.round(clamp(11 + (sepiaR * (0.11 + (warmth * 0.2)) * ink), 10, 176));
+      const green = Math.round(clamp(8 + (sepiaG * (0.09 + (warmth * 0.16)) * ink), 8, 146));
+      const blue = Math.round(clamp(6 + (sepiaB * (0.06 + (warmth * 0.11)) * ink), 6, 112));
+      return [red, green, blue];
+    }
+
+    function buildToneMap(data, width, height, options) {
+      const baseTones = new Float32Array(width * height);
+      const sharpenedTones = new Float32Array(width * height);
+
+      for (let index = 0; index < baseTones.length; index += 1) {
+        const pixel = index * 4;
+        const r = data[pixel];
+        const g = data[pixel + 1];
+        const b = data[pixel + 2];
+
+        const luminance = (r * 0.299) + (g * 0.587) + (b * 0.114);
+        let adjusted = ((luminance - 128) * options.contrast) + 128 + options.brightness;
+        adjusted = clamp(adjusted, 0, 255);
+        adjusted = 255 * Math.pow(adjusted / 255, options.gamma);
+        baseTones[index] = clamp(adjusted, 0, 255);
+      }
+
+      // A light unsharp mask keeps facial details readable after heavy down-sampling.
+      for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+          const index = (y * width) + x;
+          let blurTotal = 0;
+          let blurWeight = 0;
+
+          for (let oy = -1; oy <= 1; oy += 1) {
+            for (let ox = -1; ox <= 1; ox += 1) {
+              const sampleX = clamp(x + ox, 0, width - 1);
+              const sampleY = clamp(y + oy, 0, height - 1);
+              const weight = (ox === 0 && oy === 0) ? 4 : ((ox === 0 || oy === 0) ? 2 : 1);
+
+              blurTotal += baseTones[(sampleY * width) + sampleX] * weight;
+              blurWeight += weight;
+            }
+          }
+
+          const localBlur = blurTotal / blurWeight;
+          const current = baseTones[index];
+          sharpenedTones[index] = clamp(current + ((current - localBlur) * 1.32), 0, 255);
+        }
+      }
+
+      return sharpenedTones;
+    }
+
+    function drawTexture(context, width, height) {
+      context.save();
+      context.globalCompositeOperation = "multiply";
+      context.fillStyle = "rgba(110, 86, 66, 0.04)";
+
+      for (let y = 12; y < height - 12; y += 3) {
+        for (let x = (y % 5); x < width - 12; x += 4) {
+          const grain = noise2D(x * 0.7, y * 0.9);
+          if (grain > 0.69) {
+            context.globalAlpha = 0.012 + (grain * 0.02);
+            context.fillRect(x, y, 1 + (grain * 0.6), 1 + (grain * 0.6));
+          }
+        }
+      }
+
+      context.restore();
+    }
+
+    function drawVignette(context, width, height) {
+      context.save();
+
+      const shadow = context.createRadialGradient(
+        width * 0.5,
+        height * 0.46,
+        Math.min(width, height) * 0.16,
+        width * 0.5,
+        height * 0.5,
+        Math.max(width, height) * 0.74
+      );
+      shadow.addColorStop(0, "rgba(0, 0, 0, 0)");
+      shadow.addColorStop(0.72, "rgba(42, 27, 18, 0.06)");
+      shadow.addColorStop(1, "rgba(24, 14, 10, 0.26)");
+      context.fillStyle = shadow;
+      context.fillRect(0, 0, width, height);
+
+      const glow = context.createRadialGradient(
+        width * 0.42,
+        height * 0.24,
+        0,
+        width * 0.42,
+        height * 0.24,
+        height * 0.7
+      );
+      glow.addColorStop(0, "rgba(255, 255, 255, 0.1)");
+      glow.addColorStop(0.36, "rgba(255, 245, 228, 0.04)");
+      glow.addColorStop(1, "rgba(255, 255, 255, 0)");
+      context.fillStyle = glow;
+      context.fillRect(0, 0, width, height);
+
+      context.restore();
+    }
+
+    function renderPortrait() {
+      if (!state.image) {
+        setStatus("Upload a photo before transforming it.", true);
+        return;
+      }
+
+      const options = readControlValues();
+      if (!options.message) {
+        messageInput.focus();
+        setStatus("Enter a message before transforming the portrait.", true);
+        return;
+      }
+
+      const messageFlow = buildMessageFlow(options.message);
+      const fontSize = 5.95;
+      const charWidth = 4.72;
+      const charHeight = 6.08;
+      const margin = 24;
+      const exportScale = 3;
+      const aspect = state.image.naturalHeight / state.image.naturalWidth || 1;
+      const rows = Math.max(84, Math.round(options.density * aspect * (charWidth / charHeight)));
+
+      sourceCanvas.width = options.density;
+      sourceCanvas.height = rows;
+      sourceContext.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
+      sourceContext.imageSmoothingEnabled = true;
+      sourceContext.imageSmoothingQuality = "high";
+      sourceContext.drawImage(state.image, 0, 0, sourceCanvas.width, sourceCanvas.height);
+
+      const { data } = sourceContext.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height);
+      const tones = buildToneMap(data, sourceCanvas.width, sourceCanvas.height, options);
+
+      const logicalWidth = (sourceCanvas.width * charWidth) + (margin * 2);
+      const logicalHeight = (sourceCanvas.height * charHeight) + (margin * 2);
+
+      outputCanvas.width = Math.round(logicalWidth * exportScale);
+      outputCanvas.height = Math.round(logicalHeight * exportScale);
+      outputContext.setTransform(exportScale, 0, 0, exportScale, 0, 0);
+      outputContext.clearRect(0, 0, logicalWidth, logicalHeight);
+      outputContext.fillStyle = createPaperGradient(outputContext, logicalWidth, logicalHeight, options.warmth);
+      outputContext.fillRect(0, 0, logicalWidth, logicalHeight);
+
+      outputContext.font = '700 ' + fontSize + 'px "Courier New", monospace';
+      outputContext.textBaseline = "top";
+      outputContext.textAlign = "left";
+
+      // Each down-sampled source pixel becomes one character from the user's message.
+      for (let y = 0; y < sourceCanvas.height; y += 1) {
+        for (let x = 0; x < sourceCanvas.width; x += 1) {
+          const index = (y * sourceCanvas.width) + x;
+          const tone = tones[index];
+          const left = x > 0 ? tones[index - 1] : tone;
+          const right = x < sourceCanvas.width - 1 ? tones[index + 1] : tone;
+          const up = y > 0 ? tones[index - sourceCanvas.width] : tone;
+          const down = y < sourceCanvas.height - 1 ? tones[index + sourceCanvas.width] : tone;
+          const dx = right - left;
+          const dy = down - up;
+          const edge = Math.min(255, Math.hypot(dx, dy) * 1.12);
+          const ink = clamp((1 - (tone / 255)) + (edge / 760), 0, 1);
+          const glyph = getMessageCharacter(messageFlow, x, y);
+          const alpha = clamp(0.08 + (Math.pow(ink, 0.92) * 0.78) + (edge / 2200), 0.08, 0.97);
+
+          const pixel = index * 4;
+          const [inkR, inkG, inkB] = toInkColor(
+            data[pixel],
+            data[pixel + 1],
+            data[pixel + 2],
+            ink,
+            options.warmth
+          );
+
+          outputContext.fillStyle = "rgba(" + inkR + ", " + inkG + ", " + inkB + ", " + alpha + ")";
+          outputContext.fillText(
+            glyph,
+            margin + (x * charWidth),
+            margin + (y * charHeight)
+          );
+
+          if (glyph !== " " && edge > 72 && ink > 0.28) {
+            outputContext.fillStyle = "rgba(12, 8, 6, 0.1)";
+            outputContext.fillText(
+              glyph,
+              margin + (x * charWidth) + 0.14,
+              margin + (y * charHeight) + 0.1
+            );
+          }
+        }
+      }
+
+      drawTexture(outputContext, logicalWidth, logicalHeight);
+      drawVignette(outputContext, logicalWidth, logicalHeight);
+
+      resultCard.classList.add("is-filled");
+      downloadButton.disabled = false;
+      state.hasRender = true;
+      setStatus(
+        "Portrait rendered at " +
+        Math.round(logicalWidth) +
+        " x " +
+        Math.round(logicalHeight) +
+        " px. Zoom the canvas or downloaded PNG to read the repeated message.",
+        false
+      );
+    }
+
+    function scheduleRender() {
+      if (!state.image) {
+        return;
+      }
+
+      if (state.scheduled) {
+        cancelAnimationFrame(state.scheduled);
+      }
+
+      setStatus("Rendering message portrait...", false);
+      state.scheduled = requestAnimationFrame(() => {
+        state.scheduled = 0;
+        renderPortrait();
+      });
+    }
+
+    function loadFile(file) {
+      if (!file || !file.type.startsWith("image/")) {
+        setStatus("Please upload a valid image file.", true);
+        return;
+      }
+
+      const nextUrl = URL.createObjectURL(file);
+      const image = new Image();
+
+      image.onload = () => {
+        if (state.imageUrl) {
+          URL.revokeObjectURL(state.imageUrl);
+        }
+
+        state.image = image;
+        state.imageUrl = nextUrl;
+        state.fileBase = sanitizeFileBase(file.name);
+        setImageLoaded(nextUrl);
+        setStatus("Image loaded. Rendering message portrait...", false);
+        scheduleRender();
+      };
+
+      image.onerror = () => {
+        URL.revokeObjectURL(nextUrl);
+        setStatus("That image could not be loaded. Try another file.", true);
+      };
+
+      image.src = nextUrl;
+    }
+
+    function resetControls() {
+      messageInput.value = defaults.message;
+      Object.keys(defaults).forEach((key) => {
+        if (key === "message") {
+          return;
+        }
+        controls[key].value = defaults[key];
+      });
+      updateValueLabels();
+
+      if (state.image) {
+        scheduleRender();
+      } else {
+        setStatus("Style controls reset. Upload a photo to generate the portrait.", false);
+      }
+    }
+
+    function downloadRender() {
+      if (!state.hasRender) {
+        setStatus("Render a portrait before downloading it.", true);
+        return;
+      }
+
+      const link = document.createElement("a");
+      link.download = state.fileBase + "-message-portrait.png";
+      link.href = outputCanvas.toDataURL("image/png");
+      link.click();
+      setStatus("Download started for " + link.download + ".", false);
+    }
+
+    imageInput.addEventListener("change", (event) => {
+      const [file] = event.target.files;
+      loadFile(file);
+    });
+
+    renderButton.addEventListener("click", () => {
+      if (!state.image) {
+        setStatus("Upload a photo before transforming it.", true);
+        return;
+      }
+
+      scheduleRender();
+    });
+
+    downloadButton.addEventListener("click", downloadRender);
+    resetButton.addEventListener("click", resetControls);
+    messageInput.addEventListener("input", () => {
+      updateValueLabels();
+      if (state.image) {
+        scheduleRender();
+      }
+    });
+
+    Object.values(controls).forEach((control) => {
+      control.addEventListener("input", () => {
+        updateValueLabels();
+        if (state.image) {
+          scheduleRender();
+        }
+      });
+    });
+
+    updateValueLabels();
+
+    if (!sourceContext || !outputContext) {
+      imageInput.disabled = true;
+      renderButton.disabled = true;
+      downloadButton.disabled = true;
+      resetButton.disabled = true;
+      setStatus("This browser does not support the canvas features required for this app.", true);
+    } else {
+      clearRenderedCanvas();
+    }
+  </script>
+</body>
+</html>
