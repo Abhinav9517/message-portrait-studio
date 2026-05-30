@@ -15,6 +15,8 @@
       --accent: #f3b87a;
       --accent-strong: #ffd5a3;
       --paper: #ead7bf;
+      --teal: #85e4d0;
+      --rose: #ff9aab;
       --shadow: rgba(0, 0, 0, 0.38);
     }
 
@@ -31,19 +33,22 @@
         radial-gradient(circle at top, rgba(210, 147, 94, 0.18), transparent 36%),
         radial-gradient(circle at 15% 15%, rgba(255, 214, 156, 0.09), transparent 22%),
         linear-gradient(140deg, #090707 0%, #120d0b 45%, #1d140f 100%);
+      color-scheme: dark;
+      overflow-x: hidden;
     }
 
     .page {
-      width: min(1220px, calc(100% - 32px));
+      width: min(1380px, calc(100% - 24px));
       margin: 0 auto;
-      padding: 28px 0 36px;
+      padding: 18px 0 22px;
     }
 
     .app-shell {
       display: grid;
-      grid-template-columns: minmax(320px, 390px) minmax(0, 1fr);
-      gap: 24px;
+      grid-template-columns: minmax(360px, 430px) minmax(0, 1fr);
+      gap: 16px;
       align-items: start;
+      min-height: calc(100vh - 40px);
     }
 
     .panel {
@@ -65,11 +70,16 @@
     }
 
     .controls {
-      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 40px);
+      padding: 20px;
+      overflow: auto;
+      scrollbar-gutter: stable;
     }
 
     .eyebrow {
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       font-size: 0.82rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
@@ -82,25 +92,25 @@
 
     h1 {
       font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(2rem, 3vw, 3rem);
+      font-size: clamp(1.72rem, 2.5vw, 2.55rem);
       line-height: 0.95;
       letter-spacing: 0.02em;
     }
 
     .intro {
-      margin-top: 16px;
+      margin-top: 12px;
       color: var(--muted);
       line-height: 1.55;
-      font-size: 0.98rem;
+      font-size: 0.92rem;
     }
 
     .upload-card {
       position: relative;
       display: block;
-      margin-top: 26px;
-      padding: 18px 18px 16px;
+      margin-top: 16px;
+      padding: 13px 14px 12px;
       border: 1px dashed rgba(255, 219, 180, 0.28);
-      border-radius: 18px;
+      border-radius: 16px;
       background: linear-gradient(180deg, rgba(255, 221, 182, 0.07), rgba(255, 221, 182, 0.02));
       cursor: pointer;
       transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
@@ -130,32 +140,37 @@
 
     .upload-copy {
       display: block;
-      margin-top: 8px;
-      font-size: 0.92rem;
+      margin-top: 6px;
+      font-size: 0.86rem;
       line-height: 1.45;
       color: var(--muted);
     }
 
     .control-grid {
       display: grid;
-      gap: 14px;
-      margin-top: 24px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
     }
 
     .control {
-      padding: 14px 15px 12px;
+      padding: 11px 12px 10px;
       border: 1px solid rgba(255, 235, 214, 0.08);
-      border-radius: 18px;
+      border-radius: 15px;
       background: var(--panel-soft);
+    }
+
+    .control-wide {
+      grid-column: 1 / -1;
     }
 
     .control-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 14px;
-      margin-bottom: 10px;
-      font-size: 0.92rem;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 0.86rem;
     }
 
     .control-label {
@@ -166,6 +181,11 @@
     .control-value {
       color: var(--accent-strong);
       font-variant-numeric: tabular-nums;
+      max-width: 52%;
+      overflow: hidden;
+      text-align: right;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .control input[type="range"] {
@@ -174,12 +194,45 @@
       cursor: pointer;
     }
 
+    .control select,
+    .control input[type="color"] {
+      width: 100%;
+      min-height: 36px;
+      border: 1px solid rgba(255, 235, 214, 0.12);
+      border-radius: 12px;
+      background: rgba(255, 245, 233, 0.06);
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .control select {
+      padding: 0 10px;
+      outline: none;
+    }
+
+    .control option {
+      background: #211812;
+      color: var(--text);
+    }
+
+    .control select:focus,
+    .control input[type="color"]:focus {
+      outline: 2px solid rgba(255, 211, 154, 0.18);
+      outline-offset: 2px;
+      border-color: rgba(255, 211, 154, 0.34);
+    }
+
+    .control input[type="color"] {
+      padding: 4px;
+    }
+
     .message-input {
       width: 100%;
-      min-height: 118px;
-      padding: 12px 13px;
+      min-height: 82px;
+      padding: 10px 12px;
       border: 1px solid rgba(255, 235, 214, 0.12);
-      border-radius: 16px;
+      border-radius: 14px;
       resize: vertical;
       background: rgba(255, 245, 233, 0.05);
       color: var(--text);
@@ -199,24 +252,25 @@
 
     .control-note {
       display: block;
-      margin-top: 10px;
+      margin-top: 8px;
       color: var(--muted);
-      font-size: 0.88rem;
+      font-size: 0.8rem;
       line-height: 1.45;
     }
 
     .action-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 24px;
+      display: grid;
+      grid-template-columns: 1.15fr 1fr 0.9fr;
+      gap: 9px;
+      margin-top: 14px;
     }
 
     button {
       border: 0;
       border-radius: 999px;
-      padding: 13px 20px;
+      padding: 11px 14px;
       font: inherit;
+      font-size: 0.9rem;
       font-weight: 700;
       cursor: pointer;
       transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
@@ -251,8 +305,8 @@
 
     .status {
       min-height: 24px;
-      margin-top: 16px;
-      font-size: 0.94rem;
+      margin-top: 12px;
+      font-size: 0.86rem;
       line-height: 1.45;
       color: var(--muted);
     }
@@ -262,7 +316,10 @@
     }
 
     .preview {
-      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 40px);
+      padding: 20px;
     }
 
     .preview-head {
@@ -270,7 +327,7 @@
       justify-content: space-between;
       align-items: end;
       gap: 16px;
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
 
     .preview-head h2 {
@@ -298,8 +355,10 @@
 
     .preview-grid {
       display: grid;
-      grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr);
-      gap: 18px;
+      grid-template-columns: minmax(180px, 0.34fr) minmax(0, 1fr);
+      flex: 1;
+      gap: 14px;
+      min-height: 0;
     }
 
     .preview-card {
@@ -307,7 +366,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      min-height: 340px;
+      min-height: 0;
       overflow: hidden;
       border-radius: 22px;
       border: 1px solid rgba(255, 239, 223, 0.08);
@@ -343,12 +402,10 @@
     }
 
     #sourcePreview {
-      min-height: 340px;
       background: linear-gradient(180deg, rgba(255, 250, 246, 0.03), rgba(255, 250, 246, 0.01));
     }
 
     #outputCanvas {
-      min-height: 340px;
       background: radial-gradient(circle at top, rgba(255, 235, 206, 0.05), rgba(255, 235, 206, 0.01));
     }
 
@@ -367,13 +424,41 @@
       backdrop-filter: blur(10px);
     }
 
-    @media (max-width: 960px) {
+    @media (max-height: 820px) and (min-width: 961px) {
+      .intro {
+        display: none;
+      }
+
+      .upload-card {
+        margin-top: 12px;
+        padding: 10px 12px;
+      }
+
+      .upload-copy,
+      .control-note {
+        display: none;
+      }
+
+      .message-input {
+        min-height: 62px;
+      }
+    }
+
+    @media (max-width: 1020px) {
       .app-shell {
         grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .controls,
+      .preview {
+        max-height: none;
+        min-height: auto;
       }
 
       .preview-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(180px, 0.4fr) minmax(0, 1fr);
+        min-height: 420px;
       }
 
       .preview-card {
@@ -390,7 +475,11 @@
 
       .controls,
       .preview {
-        padding: 20px;
+        padding: 16px;
+      }
+
+      .control-grid {
+        grid-template-columns: 1fr;
       }
 
       .preview-head {
@@ -399,11 +488,20 @@
       }
 
       .action-row {
-        flex-direction: column;
+        grid-template-columns: 1fr;
       }
 
       button {
         width: 100%;
+      }
+
+      .preview-grid {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .preview-card {
+        min-height: 310px;
       }
     }
   </style>
@@ -429,7 +527,7 @@
         </label>
 
         <div class="control-grid">
-          <label class="control" for="messageInput">
+          <label class="control control-wide" for="messageInput">
             <span class="control-head">
               <span class="control-label">Special message</span>
               <span class="control-value" id="messageValue"></span>
@@ -484,6 +582,66 @@
             </span>
             <input id="warmth" type="range" min="0" max="100" value="72">
           </label>
+
+          <label class="control" for="colorMode">
+            <span class="control-head">
+              <span class="control-label">Color style</span>
+              <span class="control-value" id="colorModeValue"></span>
+            </span>
+            <select id="colorMode">
+              <option value="source">Photo Color</option>
+              <option value="duotone">Duotone Ink</option>
+              <option value="aurora">Aurora Pop</option>
+              <option value="ocean">Deep Ocean</option>
+              <option value="rose">Rose Gold</option>
+              <option value="mono">Clean Mono</option>
+            </select>
+          </label>
+
+          <label class="control" for="paperMode">
+            <span class="control-head">
+              <span class="control-label">Canvas mood</span>
+              <span class="control-value" id="paperModeValue"></span>
+            </span>
+            <select id="paperMode">
+              <option value="warm">Warm Paper</option>
+              <option value="ivory">Gallery Ivory</option>
+              <option value="blush">Blush Wash</option>
+              <option value="midnight">Midnight Glow</option>
+            </select>
+          </label>
+
+          <label class="control" for="inkColor">
+            <span class="control-head">
+              <span class="control-label">Ink tint</span>
+              <span class="control-value" id="inkColorValue"></span>
+            </span>
+            <input id="inkColor" type="color" value="#5c2a16">
+          </label>
+
+          <label class="control" for="paperColor">
+            <span class="control-head">
+              <span class="control-label">Paper tint</span>
+              <span class="control-value" id="paperColorValue"></span>
+            </span>
+            <input id="paperColor" type="color" value="#ead7bf">
+          </label>
+
+          <label class="control" for="colorBoost">
+            <span class="control-head">
+              <span class="control-label">Color boost</span>
+              <span class="control-value" id="colorBoostValue"></span>
+            </span>
+            <input id="colorBoost" type="range" min="0" max="100" value="58">
+          </label>
+
+          <label class="control" for="vignette">
+            <span class="control-head">
+              <span class="control-label">Vignette</span>
+              <span class="control-value" id="vignetteValue"></span>
+            </span>
+            <input id="vignette" type="range" min="0" max="100" value="44">
+          </label>
         </div>
 
         <div class="action-row">
@@ -526,7 +684,13 @@
       contrast: 152,
       brightness: 8,
       gamma: 92,
-      warmth: 72
+      warmth: 72,
+      colorMode: "source",
+      paperMode: "warm",
+      inkColor: "#5c2a16",
+      paperColor: "#ead7bf",
+      colorBoost: 58,
+      vignette: 44
     };
 
     const imageInput = document.getElementById("imageInput");
@@ -546,7 +710,13 @@
       contrast: document.getElementById("contrast"),
       brightness: document.getElementById("brightness"),
       gamma: document.getElementById("gamma"),
-      warmth: document.getElementById("warmth")
+      warmth: document.getElementById("warmth"),
+      colorMode: document.getElementById("colorMode"),
+      paperMode: document.getElementById("paperMode"),
+      inkColor: document.getElementById("inkColor"),
+      paperColor: document.getElementById("paperColor"),
+      colorBoost: document.getElementById("colorBoost"),
+      vignette: document.getElementById("vignette")
     };
 
     const valueLabels = {
@@ -555,7 +725,13 @@
       contrast: document.getElementById("contrastValue"),
       brightness: document.getElementById("brightnessValue"),
       gamma: document.getElementById("gammaValue"),
-      warmth: document.getElementById("warmthValue")
+      warmth: document.getElementById("warmthValue"),
+      colorMode: document.getElementById("colorModeValue"),
+      paperMode: document.getElementById("paperModeValue"),
+      inkColor: document.getElementById("inkColorValue"),
+      paperColor: document.getElementById("paperColorValue"),
+      colorBoost: document.getElementById("colorBoostValue"),
+      vignette: document.getElementById("vignetteValue")
     };
 
     const sourceCanvas = document.createElement("canvas");
@@ -583,6 +759,14 @@
       return value.replace(/\s+/g, " ").trim();
     }
 
+    function selectedText(control) {
+      return control.options[control.selectedIndex].text;
+    }
+
+    function formatHex(value) {
+      return String(value || "").toUpperCase();
+    }
+
     function updateValueLabels() {
       const message = normalizeMessage(messageInput.value);
       valueLabels.message.textContent = message.length + " chars";
@@ -591,6 +775,12 @@
       valueLabels.brightness.textContent = (Number(controls.brightness.value) >= 0 ? "+" : "") + controls.brightness.value;
       valueLabels.gamma.textContent = (Number(controls.gamma.value) / 100).toFixed(2);
       valueLabels.warmth.textContent = controls.warmth.value + "%";
+      valueLabels.colorMode.textContent = selectedText(controls.colorMode);
+      valueLabels.paperMode.textContent = selectedText(controls.paperMode);
+      valueLabels.inkColor.textContent = formatHex(controls.inkColor.value);
+      valueLabels.paperColor.textContent = formatHex(controls.paperColor.value);
+      valueLabels.colorBoost.textContent = controls.colorBoost.value + "%";
+      valueLabels.vignette.textContent = controls.vignette.value + "%";
     }
 
     function setStatus(message, isError) {
@@ -629,7 +819,13 @@
         contrast: Number(controls.contrast.value) / 100,
         brightness: Number(controls.brightness.value),
         gamma: Number(controls.gamma.value) / 100,
-        warmth: Number(controls.warmth.value) / 100
+        warmth: Number(controls.warmth.value) / 100,
+        colorMode: controls.colorMode.value,
+        paperMode: controls.paperMode.value,
+        inkColor: hexToRgb(controls.inkColor.value, [92, 42, 22]),
+        paperColor: hexToRgb(controls.paperColor.value, [234, 215, 191]),
+        colorBoost: Number(controls.colorBoost.value) / 100,
+        vignette: Number(controls.vignette.value) / 100
       };
     }
 
@@ -642,28 +838,129 @@
       return flow[(rowOffset + x) % flow.length];
     }
 
-    function createPaperGradient(context, width, height, warmth) {
+    function hexToRgb(hex, fallback) {
+      let value = String(hex || "").replace("#", "").trim();
+
+      if (value.length === 3) {
+        value = value.split("").map((character) => character + character).join("");
+      }
+
+      if (!/^[0-9a-f]{6}$/i.test(value)) {
+        return fallback;
+      }
+
+      return [
+        parseInt(value.slice(0, 2), 16),
+        parseInt(value.slice(2, 4), 16),
+        parseInt(value.slice(4, 6), 16)
+      ];
+    }
+
+    function mixColor(first, second, amount) {
+      const ratio = clamp(amount, 0, 1);
+
+      return [
+        Math.round(first[0] + ((second[0] - first[0]) * ratio)),
+        Math.round(first[1] + ((second[1] - first[1]) * ratio)),
+        Math.round(first[2] + ((second[2] - first[2]) * ratio))
+      ];
+    }
+
+    function colorToRgb(color) {
+      return "rgb(" + color[0] + ", " + color[1] + ", " + color[2] + ")";
+    }
+
+    function saturateColor(color, amount) {
+      const luminance = (color[0] * 0.299) + (color[1] * 0.587) + (color[2] * 0.114);
+      const saturation = 1 + amount;
+
+      return [
+        clamp(luminance + ((color[0] - luminance) * saturation), 0, 255),
+        clamp(luminance + ((color[1] - luminance) * saturation), 0, 255),
+        clamp(luminance + ((color[2] - luminance) * saturation), 0, 255)
+      ];
+    }
+
+    function getPaperBase(options) {
+      if (options.paperMode === "midnight") {
+        return mixColor([10, 14, 21], options.paperColor, 0.16 + (options.warmth * 0.12));
+      }
+
+      if (options.paperMode === "ivory") {
+        return mixColor(options.paperColor, [255, 249, 232], 0.52);
+      }
+
+      if (options.paperMode === "blush") {
+        return mixColor(options.paperColor, [255, 220, 218], 0.42);
+      }
+
+      return mixColor(options.paperColor, [244, 221, 190], options.warmth * 0.24);
+    }
+
+    function createPaperGradient(context, width, height, options) {
       const gradient = context.createLinearGradient(0, 0, width, height);
-      const topR = Math.round(244 - (warmth * 10));
-      const topG = Math.round(232 - (warmth * 6));
-      const topB = Math.round(214 - (warmth * 18));
-      const bottomR = Math.round(216 - (warmth * 12));
-      const bottomG = Math.round(201 - (warmth * 7));
-      const bottomB = Math.round(181 - (warmth * 16));
-      gradient.addColorStop(0, "rgb(" + topR + ", " + topG + ", " + topB + ")");
-      gradient.addColorStop(0.52, "rgb(" + (topR - 5) + ", " + (topG - 4) + ", " + (topB - 7) + ")");
-      gradient.addColorStop(1, "rgb(" + bottomR + ", " + bottomG + ", " + bottomB + ")");
+      const base = getPaperBase(options);
+
+      if (options.paperMode === "midnight") {
+        const top = mixColor(base, [43, 55, 78], 0.5);
+        const middle = mixColor(base, [18, 24, 35], 0.42);
+        const bottom = mixColor(base, [2, 4, 8], 0.48);
+
+        gradient.addColorStop(0, colorToRgb(top));
+        gradient.addColorStop(0.55, colorToRgb(middle));
+        gradient.addColorStop(1, colorToRgb(bottom));
+        return gradient;
+      }
+
+      const top = mixColor(base, [255, 253, 239], 0.24 + (options.warmth * 0.1));
+      const middle = mixColor(base, [240, 220, 194], 0.12 + (options.warmth * 0.08));
+      const bottom = mixColor(base, [133, 94, 65], 0.1 + (options.warmth * 0.1));
+
+      gradient.addColorStop(0, colorToRgb(top));
+      gradient.addColorStop(0.54, colorToRgb(middle));
+      gradient.addColorStop(1, colorToRgb(bottom));
       return gradient;
     }
 
-    function toInkColor(r, g, b, ink, warmth) {
-      const sepiaR = clamp((r * 0.393) + (g * 0.769) + (b * 0.189), 0, 255);
-      const sepiaG = clamp((r * 0.349) + (g * 0.686) + (b * 0.168), 0, 255);
-      const sepiaB = clamp((r * 0.272) + (g * 0.534) + (b * 0.131), 0, 255);
-      const red = Math.round(clamp(11 + (sepiaR * (0.11 + (warmth * 0.2)) * ink), 10, 176));
-      const green = Math.round(clamp(8 + (sepiaG * (0.09 + (warmth * 0.16)) * ink), 8, 146));
-      const blue = Math.round(clamp(6 + (sepiaB * (0.06 + (warmth * 0.11)) * ink), 6, 112));
-      return [red, green, blue];
+    function getPaletteColor(sourceColor, options, ink, x, y, width, height) {
+      const source = saturateColor(sourceColor, options.colorBoost * 0.95);
+      const diagonal = ((x / Math.max(1, width)) * 0.62) + ((y / Math.max(1, height)) * 0.38);
+
+      if (options.colorMode === "mono") {
+        return options.inkColor;
+      }
+
+      if (options.colorMode === "duotone") {
+        return mixColor(options.inkColor, [244, 157, 86], 0.2 + ((1 - ink) * 0.28));
+      }
+
+      if (options.colorMode === "aurora") {
+        const aurora = mixColor([80, 221, 196], [255, 101, 146], diagonal);
+        return mixColor(aurora, [255, 200, 86], noise2D(x * 0.05, y * 0.05) * 0.24);
+      }
+
+      if (options.colorMode === "ocean") {
+        return mixColor(source, [40, 150, 188], 0.62);
+      }
+
+      if (options.colorMode === "rose") {
+        return mixColor(source, [229, 98, 124], 0.58);
+      }
+
+      return source;
+    }
+
+    function toInkColor(r, g, b, ink, options, x, y, width, height) {
+      const palette = getPaletteColor([r, g, b], options, ink, x, y, width, height);
+      const blend = options.colorMode === "mono" ? 0 : (0.22 + (options.colorBoost * 0.68));
+      const color = mixColor(options.inkColor, palette, blend);
+
+      if (options.paperMode === "midnight") {
+        const glowBase = mixColor([202, 221, 255], color, 0.7);
+        return mixColor([90, 112, 151], glowBase, clamp(0.46 + (ink * 0.5), 0, 1));
+      }
+
+      return mixColor([12, 8, 6], color, clamp(0.3 + (ink * 0.56), 0, 1));
     }
 
     function buildToneMap(data, width, height, options) {
@@ -728,8 +1025,14 @@
       context.restore();
     }
 
-    function drawVignette(context, width, height) {
+    function drawVignette(context, width, height, options) {
+      if (options.vignette <= 0.01) {
+        return;
+      }
+
       context.save();
+      const strength = options.vignette;
+      const darkCanvas = options.paperMode === "midnight";
 
       const shadow = context.createRadialGradient(
         width * 0.5,
@@ -740,8 +1043,14 @@
         Math.max(width, height) * 0.74
       );
       shadow.addColorStop(0, "rgba(0, 0, 0, 0)");
-      shadow.addColorStop(0.72, "rgba(42, 27, 18, 0.06)");
-      shadow.addColorStop(1, "rgba(24, 14, 10, 0.26)");
+      shadow.addColorStop(
+        0.72,
+        darkCanvas ? "rgba(0, 0, 0, " + (0.08 * strength) + ")" : "rgba(42, 27, 18, " + (0.06 * strength) + ")"
+      );
+      shadow.addColorStop(
+        1,
+        darkCanvas ? "rgba(0, 0, 0, " + (0.42 * strength) + ")" : "rgba(24, 14, 10, " + (0.26 * strength) + ")"
+      );
       context.fillStyle = shadow;
       context.fillRect(0, 0, width, height);
 
@@ -753,8 +1062,8 @@
         height * 0.24,
         height * 0.7
       );
-      glow.addColorStop(0, "rgba(255, 255, 255, 0.1)");
-      glow.addColorStop(0.36, "rgba(255, 245, 228, 0.04)");
+      glow.addColorStop(0, darkCanvas ? "rgba(139, 220, 255, " + (0.14 * strength) + ")" : "rgba(255, 255, 255, " + (0.1 * strength) + ")");
+      glow.addColorStop(0.36, darkCanvas ? "rgba(255, 168, 198, " + (0.05 * strength) + ")" : "rgba(255, 245, 228, " + (0.04 * strength) + ")");
       glow.addColorStop(1, "rgba(255, 255, 255, 0)");
       context.fillStyle = glow;
       context.fillRect(0, 0, width, height);
@@ -801,7 +1110,7 @@
       outputCanvas.height = Math.round(logicalHeight * exportScale);
       outputContext.setTransform(exportScale, 0, 0, exportScale, 0, 0);
       outputContext.clearRect(0, 0, logicalWidth, logicalHeight);
-      outputContext.fillStyle = createPaperGradient(outputContext, logicalWidth, logicalHeight, options.warmth);
+      outputContext.fillStyle = createPaperGradient(outputContext, logicalWidth, logicalHeight, options);
       outputContext.fillRect(0, 0, logicalWidth, logicalHeight);
 
       outputContext.font = '700 ' + fontSize + 'px "Courier New", monospace';
@@ -830,7 +1139,11 @@
             data[pixel + 1],
             data[pixel + 2],
             ink,
-            options.warmth
+            options,
+            x,
+            y,
+            sourceCanvas.width,
+            sourceCanvas.height
           );
 
           outputContext.fillStyle = "rgba(" + inkR + ", " + inkG + ", " + inkB + ", " + alpha + ")";
@@ -841,7 +1154,7 @@
           );
 
           if (glyph !== " " && edge > 72 && ink > 0.28) {
-            outputContext.fillStyle = "rgba(12, 8, 6, 0.1)";
+            outputContext.fillStyle = options.paperMode === "midnight" ? "rgba(255, 250, 226, 0.13)" : "rgba(12, 8, 6, 0.1)";
             outputContext.fillText(
               glyph,
               margin + (x * charWidth) + 0.14,
@@ -852,7 +1165,7 @@
       }
 
       drawTexture(outputContext, logicalWidth, logicalHeight);
-      drawVignette(outputContext, logicalWidth, logicalHeight);
+      drawVignette(outputContext, logicalWidth, logicalHeight, options);
 
       resultCard.classList.add("is-filled");
       downloadButton.disabled = false;
@@ -966,13 +1279,16 @@
       }
     });
 
+    function handleControlChange() {
+      updateValueLabels();
+      if (state.image) {
+        scheduleRender();
+      }
+    }
+
     Object.values(controls).forEach((control) => {
-      control.addEventListener("input", () => {
-        updateValueLabels();
-        if (state.image) {
-          scheduleRender();
-        }
-      });
+      control.addEventListener("input", handleControlChange);
+      control.addEventListener("change", handleControlChange);
     });
 
     updateValueLabels();
